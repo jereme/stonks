@@ -1,0 +1,35 @@
+{
+	"name": "Spotify playlis to slack",
+	"description": "Show new playlist entries in a slack channel",
+	"website": "https://github.com/jereme/stonks",
+	"repository": "https://github.com/jereme/stonks",
+	"env": {
+		"SLACK_URL": {
+			"description":"A Slack publish webhook"
+		},
+		"SPOTIFY_CLIENT_ID": {
+			"description":"A Spotify developer client app id"
+		},
+		"SPOTIFY_CLIENT_SECRET": {
+			"description":"A Spotify developer client app secret"
+		},
+		"SPOTIFY_USERNAME": {
+			"description":"A Spotify username for the user who has the playlist"
+		},
+		"SPOTIFY_PLAYLIST": {
+			"description":"A Spotify playlist for the user"
+		},
+		"EXECUTION_INTERVAL": {
+			"description":"How often to update"
+		}
+	},
+	"addons": [
+		"redistogo:nano"
+	],
+    "buildpacks": [
+        {
+            "url":"https://github.com/heroku/heroku-buildpack-ruby"
+        }
+    ]
+}
+
