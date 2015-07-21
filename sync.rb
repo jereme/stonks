@@ -4,6 +4,8 @@ require 'rspotify'
 require 'slack-notifier'
 require 'time'
 
+STDOUT.sync = true
+
 execution_interval  = ENV['EXECUTION_INTERVAL']
 spotify_client_id   = ENV['SPOTIFY_CLIENT_ID']
 spotify_secret      = ENV['SPOTIFY_SECRET']
@@ -13,7 +15,7 @@ redistogo_url       = ENV['REDISTOGO_URL']
 slack_url           = ENV['SLACK_URL']
 
 RSpotify.authenticate(spotify_client_id, spotify_secret)
-raise ENV.inspect
+
 def get_spotify_user(id)
   RSpotify::User.find(id)
 end
@@ -61,8 +63,7 @@ def post_track(slack_notifier, track)
   else
     post_string = sprintf("New track added to <%s|%s> by <%s|%s>: <%s|(link)>", track[:playlist_uri], track[:playlist_name], track[:added_by_uri], track[:added_by], track[:url])
   end
-puts post_string  
-  # slack_notifier.ping post_string
+  slack_notifier.ping post_string
 end
 
 def post_new_tracks(slack_notifier, new_tracks)
@@ -76,12 +77,9 @@ end
 redis = Redis.new(:url => ENV['REDISTOGO_URL'])
 slack_notifier = Slack::Notifier.new slack_url, :username => 'Spotify SOTD', :icon_url => 'http://i.imgur.com/CujKStk.png'
 last_updated_string = redis.get('last_updated')
-last_updated = last_updated_string.empty? ? nil : Time.parse(last_updated_string)
+last_updated = last_updated_string.nil? ? Time.now.utc : Time.parse(last_updated_string)
 
 loop do
-  # Get current UTC time
-  current_time = Time.now.utc
-
   begin
     # Scan the playlist for new tracks
     new_tracks = get_new_tracks(spotify_username, spotify_playlist, last_updated)
@@ -95,7 +93,7 @@ loop do
   end
 
   # Persist the last updated timestamp
-  last_updated = current_time
+  last_updated = Time.now.utc
   redis.set('last_updated', last_updated)
   
   puts sprintf("Last checked at %s", last_updated.to_s)
