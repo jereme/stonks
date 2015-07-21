@@ -1,5 +1,5 @@
 {
-	"name": "Spotify playlis to slack",
+	"name": "Spotify playlist to Slack",
 	"description": "Show new playlist entries in a slack channel",
 	"website": "https://github.com/jereme/stonks",
 	"repository": "https://github.com/jereme/stonks",
@@ -25,11 +25,6 @@
 	},
 	"addons": [
 		"redistogo:nano"
-	],
-    "buildpacks": [
-        {
-            "url":"https://github.com/heroku/heroku-buildpack-ruby"
-        }
-    ]
+	]
 }
 

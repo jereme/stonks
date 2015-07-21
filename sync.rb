@@ -74,7 +74,7 @@ def post_new_tracks(slack_notifier, new_tracks)
   end
 end
 
-redis = Redis.new(:url => ENV['REDISTOGO_URL'])
+redis = Redis.new(:url => redistogo_url)
 slack_notifier = Slack::Notifier.new slack_url, :username => 'Spotify SOTD', :icon_url => 'http://i.imgur.com/CujKStk.png'
 last_updated_string = redis.get('last_updated')
 last_updated = last_updated_string.nil? ? Time.now.utc : Time.parse(last_updated_string)
