@@ -13,7 +13,7 @@ redistogo_url       = ENV['REDISTOGO_URL']
 slack_url           = ENV['SLACK_URL']
 
 RSpotify.authenticate(spotify_client_id, spotify_secret)
-puts ENV.inspect
+raise ENV.inspect
 def get_spotify_user(id)
   RSpotify::User.find(id)
 end
