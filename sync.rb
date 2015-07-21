@@ -4,6 +4,8 @@ require 'rspotify'
 require 'slack-notifier'
 require 'time'
 
+STDOUT.sync = true
+
 execution_interval  = ENV['EXECUTION_INTERVAL'] || 30
 spotify_client_id   = ENV['SPOTIFY_CLIENT_ID']  || ''
 spotify_secret      = ENV['SPOTIFY_SECRET']     || ''
@@ -15,11 +17,21 @@ slack_url           = ENV['SLACK_URL']          || ''
 RSpotify.authenticate(spotify_client_id, spotify_secret)
 
 def get_spotify_user(id)
-  RSpotify::User.find(id)
+  begin
+    RSpotify::User.find(id)
+  rescue RestClient::BadRequest
+    puts "400 error from Spotify API"
+  end
 end
 
 def get_new_tracks(spotify_username, spotify_playlist, since_time)
-  playlist = RSpotify::Playlist.find(spotify_username, spotify_playlist)
+  playlist = nil
+  begin
+    playlist = RSpotify::Playlist.find(spotify_username, spotify_playlist)
+  rescue RestClient::BadRequest
+    puts "400 error from Spotify API"
+  end
+  
   new_tracks = Array.new
 
   if playlist
