@@ -1,5 +1,4 @@
 #!/usr/bin/ruby
-puts ENV.inspect
 require 'redis'
 require 'rspotify'
 require 'slack-notifier'
@@ -9,7 +8,7 @@ STDOUT.sync = true
 
 execution_interval  = ENV['EXECUTION_INTERVAL']
 spotify_client_id   = ENV['SPOTIFY_CLIENT_ID']
-spotify_secret      = ENV['SPOTIFY_SECRET']
+spotify_secret      = ENV['SPOTIFY_CLIENT_SECRET']
 spotify_playlist    = ENV['SPOTIFY_PLAYLIST']
 spotify_username    = ENV['SPOTIFY_USERNAME']
 redistogo_url       = ENV['REDISTOGO_URL']
