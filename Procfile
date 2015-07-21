@@ -1,1 +1,1 @@
-worker: bundle exec ruby sync.rb
+worker: ruby sync.rb
