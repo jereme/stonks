@@ -4,8 +4,6 @@ require 'rspotify'
 require 'slack-notifier'
 require 'time'
 
-STDOUT.sync = true
-
 execution_interval  = ENV['EXECUTION_INTERVAL']
 spotify_client_id   = ENV['SPOTIFY_CLIENT_ID']
 spotify_secret      = ENV['SPOTIFY_SECRET']
