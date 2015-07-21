@@ -1,1 +1,1 @@
-worker: bundle exec rake app:start
+worker: bundle exec ruby sync.rb
