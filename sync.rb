@@ -19,8 +19,8 @@ RSpotify.authenticate(spotify_client_id, spotify_secret)
 def get_spotify_user(id)
   begin
     RSpotify::User.find(id)
-  rescue RestClient::BadRequest
-    puts "400 error from Spotify API"
+  rescue
+    puts "Error from Spotify API"
   end
 end
 
@@ -28,8 +28,8 @@ def get_new_tracks(spotify_username, spotify_playlist, since_time)
   playlist = nil
   begin
     playlist = RSpotify::Playlist.find(spotify_username, spotify_playlist)
-  rescue RestClient::BadRequest
-    puts "400 error from Spotify API"
+  rescue
+    puts "Error from Spotify API"
   end
   
   new_tracks = Array.new
