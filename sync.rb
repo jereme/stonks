@@ -6,31 +6,22 @@ require 'time'
 
 STDOUT.sync = true
 
-execution_interval  = ENV['EXECUTION_INTERVAL'] || 30
-spotify_client_id   = ENV['SPOTIFY_CLIENT_ID']  || ''
-spotify_secret      = ENV['SPOTIFY_SECRET']     || ''
-spotify_playlist    = ENV['SPOTIFY_PLAYLIST']   || ''
-spotify_username    = ENV['SPOTIFY_USERNAME']   || ''
-redistogo_url       = ENV['REDISTOGO_URL']      || ''
-slack_url           = ENV['SLACK_URL']          || ''
+execution_interval  = ENV['EXECUTION_INTERVAL']
+spotify_client_id   = ENV['SPOTIFY_CLIENT_ID']
+spotify_secret      = ENV['SPOTIFY_SECRET']
+spotify_playlist    = ENV['SPOTIFY_PLAYLIST']
+spotify_username    = ENV['SPOTIFY_USERNAME']
+redistogo_url       = ENV['REDISTOGO_URL']
+slack_url           = ENV['SLACK_URL']
 
 RSpotify.authenticate(spotify_client_id, spotify_secret)
 
 def get_spotify_user(id)
-  begin
-    RSpotify::User.find(id)
-  rescue
-    puts "Error from Spotify API"
-  end
+  RSpotify::User.find(id)
 end
 
 def get_new_tracks(spotify_username, spotify_playlist, since_time)
-  playlist = nil
-  begin
-    playlist = RSpotify::Playlist.find(spotify_username, spotify_playlist)
-  rescue
-    puts "Error from Spotify API"
-  end
+  playlist = RSpotify::Playlist.find(spotify_username, spotify_playlist)
   
   new_tracks = Array.new
 
@@ -72,8 +63,8 @@ def post_track(slack_notifier, track)
   else
     post_string = sprintf("New track added to <%s|%s> by <%s|%s>: <%s|(link)>", track[:playlist_uri], track[:playlist_name], track[:added_by_uri], track[:added_by], track[:url])
   end
-  
-  slack_notifier.ping post_string
+puts post_string  
+  # slack_notifier.ping post_string
 end
 
 def post_new_tracks(slack_notifier, new_tracks)
@@ -84,27 +75,31 @@ def post_new_tracks(slack_notifier, new_tracks)
   end
 end
 
-redis = Redis.new(:url => ENV['REDISTOGO_URL'])
+# redis = Redis.new(:url => ENV['REDISTOGO_URL'])
 slack_notifier = Slack::Notifier.new slack_url, :username => 'Spotify SOTD', :icon_url => 'http://i.imgur.com/CujKStk.png'
-
-last_updated_string = redis.get('last_updated')
+last_updated_string = ""
+# last_updated_string = redis.get('last_updated')
 last_updated = last_updated_string.empty? ? nil : Time.parse(last_updated_string)
 
 loop do
   # Get current UTC time
   current_time = Time.now.utc
 
-  # Scan the playlist for new tracks
-  new_tracks = get_new_tracks(spotify_username, spotify_playlist, last_updated)
+  begin
+    # Scan the playlist for new tracks
+    new_tracks = get_new_tracks(spotify_username, spotify_playlist, last_updated)
   
-  # If we have new tracks post them
-  if !new_tracks.empty?
-    post_new_tracks(slack_notifier, new_tracks)
+    # If we have new tracks post them
+    if !new_tracks.empty?
+      post_new_tracks(slack_notifier, new_tracks)
+    end
+  rescue
+    puts "Failed to get update"
   end
 
   # Persist the last updated timestamp
   last_updated = current_time
-  redis.set('last_updated', last_updated)
+  # redis.set('last_updated', last_updated)
   
   puts sprintf("Last checked at %s", last_updated.to_s)
   sleep execution_interval.to_i
