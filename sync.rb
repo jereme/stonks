@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+puts ENV.inspect
 require 'redis'
 require 'rspotify'
 require 'slack-notifier'

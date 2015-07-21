@@ -25,6 +25,11 @@
 	},
 	"addons": [
 		"redistogo:nano"
-	]
+	],
+    "buildpacks": [
+        {
+            "url":"https://github.com/heroku/heroku-buildpack-ruby"
+        }
+    ]
 }
 
