@@ -87,15 +87,17 @@ loop do
     # If we have new tracks post them
     if !new_tracks.empty?
       post_new_tracks(slack_notifier, new_tracks)
+
+      # Persist the last updated timestamp
+      last_updated = Time.now.utc
+      redis.set('last_updated', last_updated)
+      puts sprintf("Posted %s track(s) at %s", new_tracks.count.to_s, Time.now.utc.to_s)
     end
+
   rescue
     puts "Failed to get update"
   end
-
-  # Persist the last updated timestamp
-  last_updated = Time.now.utc
-  redis.set('last_updated', last_updated)
-  
-  puts sprintf("Last checked at %s", last_updated.to_s)
+    
+  puts sprintf("Last checked at %s", Time.now.utc.to_s)
   sleep execution_interval.to_i
 end
