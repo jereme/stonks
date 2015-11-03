@@ -76,12 +76,13 @@ def post_new_tracks(slack_notifier, new_tracks)
 end
 
 redis = Redis.new(:url => redistogo_url)
+redis.set('last_updated', "2015-11-02 18:40:55 UTC")
 slack_notifier = Slack::Notifier.new slack_url, :username => 'Spotify SOTD', :icon_url => 'http://i.imgur.com/CujKStk.png'
 last_updated_string = redis.get('last_updated')
 last_updated = last_updated_string.nil? ? Time.now.utc : Time.parse(last_updated_string)
 
 loop do
-  # begin
+  begin
     # Scan the playlist for new tracks
     new_tracks = get_new_tracks(spotify_username, spotify_playlist, last_updated)
   
@@ -95,9 +96,9 @@ loop do
       puts sprintf("Posted %s track(s) at %s", new_tracks.count.to_s, Time.now.utc.to_s)
     end
 
-  # rescue
-  #   puts "Failed to get update"
-  # end
+  rescue
+    puts "Failed to get update"
+  end
     
   puts sprintf("Last checked at %s", Time.now.utc.to_s)
   sleep execution_interval.to_i
