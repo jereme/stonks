@@ -27,23 +27,24 @@ def get_new_tracks(spotify_username, spotify_playlist, since_time)
 
   if playlist
     playlist.tracks.each do |track|
-      track_info = Hash.new
-      added_by = playlist.tracks_added_by[track.id]
-      
-      added_by_user = get_spotify_user(added_by.id)
-      
       added_at = playlist.tracks_added_at[track.id]
-      track_info[:playlist_name] = playlist.name
-      track_info[:playlist_uri] = playlist.uri
-      track_info[:url] = track.external_urls['spotify']
+
+      if since_time.nil? or since_time < added_at
+        
+        track_info = Hash.new
+
+        added_by = playlist.tracks_added_by[track.id]
+        added_by_user = get_spotify_user(added_by.id)
       
-      if !added_by_user.nil?
-        track_info[:added_by] = added_by_user.display_name.nil? ? added_by_user.id : added_by_user.display_name
-        track_info[:added_by_uri] = added_by_user.uri
-      end
+        track_info[:playlist_name] = playlist.name
+        track_info[:playlist_uri] = playlist.uri
+        track_info[:url] = track.external_urls['spotify']
       
-      track_info[:added_at] = added_at
-      if since_time.nil? or since_time < track_info[:added_at]
+        if !added_by_user.nil?
+          track_info[:added_by] = added_by_user.display_name.nil? ? added_by_user.id : added_by_user.display_name
+          track_info[:added_by_uri] = added_by_user.uri
+        end
+      
         new_tracks << track_info
       end
     end  
