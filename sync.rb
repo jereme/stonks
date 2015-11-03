@@ -37,22 +37,20 @@ def get_new_tracks(spotify_username, spotify_playlist, since_time)
     playlist.tracks(offset: track_offset, limit: track_limit).each do |track|
       added_at = playlist.tracks_added_at[track.id]
 
-      added_by = playlist.tracks_added_by[track.id]
-      added_by_user = get_spotify_user(added_by.id)
-      puts added_by.id + " : " + added_by_user.inspect
-
       if since_time.nil? or since_time < added_at
         
         track_info = Hash.new
-
-        added_by = playlist.tracks_added_by[track.id]
-        puts added_by.inspect
-        added_by_user = get_spotify_user(added_by.id)
       
         track_info[:playlist_name] = playlist.name
         track_info[:playlist_uri] = playlist.uri
         track_info[:url] = track.external_urls['spotify']
-      
+
+        added_by_user = playlist.tracks_added_by[track.id]
+
+        if added_by_user.id =~ /\A\d+\Z/
+          added_by_user = get_spotify_user(added_by_user.id)
+        end
+        
         if !added_by_user.nil?
           track_info[:added_by] = added_by_user.display_name.nil? ? added_by_user.id : added_by_user.display_name
           track_info[:added_by_uri] = added_by_user.uri
@@ -94,7 +92,7 @@ last_updated_string = redis.get('last_updated')
 last_updated = last_updated_string.nil? ? Time.now.utc : Time.parse(last_updated_string)
 
 loop do
-  # begin
+  begin
     # Scan the playlist for new tracks
     new_tracks = get_new_tracks(spotify_username, spotify_playlist, last_updated)
   
@@ -108,9 +106,9 @@ loop do
       puts sprintf("Posted %s track(s) at %s", new_tracks.count.to_s, Time.now.utc.to_s)
     end
 
-  # rescue
-  #   puts "Failed to get update"
-  # end
+  rescue
+    puts "Failed to get update"
+  end
     
   puts sprintf("Last checked at %s", Time.now.utc.to_s)
   puts sprintf("Last posted at %s", last_updated.to_s)
