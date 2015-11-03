@@ -25,8 +25,16 @@ def get_new_tracks(spotify_username, spotify_playlist, since_time)
   
   new_tracks = Array.new
   
-  puts playlist.total
   if playlist
+    
+    track_limit = 20
+    track_offset = 0
+    
+    if track_limit < playlist.total
+      track_offset = playlist.total - track_limit
+    end
+    
+    puts "Limit: " + track_limit + " Offset: " + track_offset
     playlist.tracks.each do |track|
       added_at = playlist.tracks_added_at[track.id]
 
