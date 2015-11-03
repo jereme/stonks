@@ -38,7 +38,7 @@ def get_new_tracks(spotify_username, spotify_playlist, since_time)
       added_at = playlist.tracks_added_at[track.id]
 
       added_by = playlist.tracks_added_by[track.id]
-      puts added_by.id
+      puts added_by.id " : " added_by.inspect
 
       if since_time.nil? or since_time < added_at
         
