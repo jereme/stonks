@@ -34,7 +34,7 @@ def get_new_tracks(spotify_username, spotify_playlist, since_time)
       track_offset = playlist.total - track_limit
     end
     
-    puts "Limit: " + track_limit + " Offset: " + track_offset
+    puts "Limit: " + track_limit.to_s + " Offset: " + track_offset.to_s
     playlist.tracks.each do |track|
       added_at = playlist.tracks_added_at[track.id]
 
