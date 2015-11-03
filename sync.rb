@@ -24,7 +24,7 @@ def get_new_tracks(spotify_username, spotify_playlist, since_time)
   playlist = RSpotify::Playlist.find(spotify_username, spotify_playlist)
   
   new_tracks = Array.new
-
+  puts playist.inspect
   if playlist
     playlist.tracks.each do |track|
       added_at = playlist.tracks_added_at[track.id]
