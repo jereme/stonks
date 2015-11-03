@@ -29,6 +29,7 @@ def get_new_tracks(spotify_username, spotify_playlist, since_time)
     playlist.tracks.each do |track|
       added_at = playlist.tracks_added_at[track.id]
 
+      puts "Current track: " + added_at + " Since Time: " + since_time
       if since_time.nil? or since_time < added_at
         
         track_info = Hash.new
@@ -76,7 +77,7 @@ def post_new_tracks(slack_notifier, new_tracks)
 end
 
 redis = Redis.new(:url => redistogo_url)
-redis.set('last_updated', "2015-11-02 18:40:55 UTC")
+redis.set('last_updated', Time.now.utc - (60 * 60 * 24))
 slack_notifier = Slack::Notifier.new slack_url, :username => 'Spotify SOTD', :icon_url => 'http://i.imgur.com/CujKStk.png'
 last_updated_string = redis.get('last_updated')
 last_updated = last_updated_string.nil? ? Time.now.utc : Time.parse(last_updated_string)
